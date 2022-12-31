@@ -16,6 +16,52 @@ Future plans are to use a proper Xml parser and do some better error checking.
 
 Warning: This is a super dirty implementation. Use at your own risk.
 
+# Example usage:
+
+AssemblyInfo.props
+
+```
+<?xml version="1.0" encoding="utf-8" ?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <AssemblyName>HelloWorld</AssemblyName>
+        <ProductVersion>1.0.0.0</ProductVersion>
+        <ProjectGuid>{...}</ProjectGuid>
+    </PropertyGroup>
+</Project>
+```
+
+Project.csproj
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="AssemblyInfo.props"/>
+  
+  <PropertyGroup>
+    <OutputPath>bin\</OutputPath>
+    <OutputType>WinExe</OutputType> 
+    <ToolsBin Condition=" '$(ToolsBin)' == '' ">\Tools</ToolsBin>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Include="HelloWorld.cs" />
+  </ItemGroup>
+
+  <Target Name="Build" DependsOnTargets="IncrementBuild" />
+
+  <Target Name="IncrementBuild" DependsOnTargets="BuildHelloExe">
+    <Exec Command="$(ToolsBin)\incbuild.exe AssemblyInfo.props build" />
+  </Target>
+
+  <Target Name="BuildHelloExe">
+    <Csc Sources="@(Compile)" OutputAssembly="hello.exe" />
+  </Target>
+</Project>
+```
+# MIT open source license
+
 Code is licensed under the MIT open source license.
 
 Copyright 2022, 2023 Charles Freedman
